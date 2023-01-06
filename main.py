@@ -7,7 +7,7 @@ import os
 from colours import *
 from tkinter import *
 from tkinter import messagebox
-# TODO: MOST IMPORTANT: Recode Hot sauce to die when it hits the bottom of the screen, code it at the bottom of the main loop Screens! Start screen, end screen, Hitstop,
+# TODO: MOST IMPORTANT: HOME SCREEN
 
 # ----- CONSTANTS
 BLACK = (0, 0, 0)
@@ -143,9 +143,9 @@ class Mcguffin(pygame.sprite.Sprite):
         # Top and bottom
         self.life_timer += 1
         if self.rect.top < 0:
-            self.rect.top = 0
+            pass
         if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
+            self.kill()
         # Left and right
         if self.rect.left < 0:
             self.rect.left = 0
@@ -293,7 +293,8 @@ def main():
 
 
     # ----- LOCAL VARIABLES
-    done = False
+    Main_menu = False
+    Guy_dodge_game_done = False
     direction = 0
     crouch = False
     jump = 0
@@ -315,11 +316,11 @@ def main():
     floor_fire_rev = pygame.image.load('./Hellfire_Animation/Floorfire-reverse.png')
 
     # ----- MAIN LOOP
-    while not done:
+    while not Guy_dodge_game_done:
         # -- Event Handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
+                Guy_dodge_game_done = True
 
         # Spawn Platforms
         score += 1
@@ -343,9 +344,9 @@ def main():
 
         if pygame.time.get_ticks() - last_time_spawned_mcguffin >= Mcguffin_cooldown:
             mcguffin = Mcguffin()
-            mcguffin.rect.x, mcguffin.rect.y = (WIDTH - random.randrange (1, 1200), HEIGHT - random.randrange (1, 1000))
-            all_sprites_group.add(mcguffin)
+            mcguffin.rect.x, mcguffin.rect.y = (WIDTH - random.randrange (1, 1200), HEIGHT - 1200)
             powerup_sprites_group.add(mcguffin)
+            all_sprites_group.add(mcguffin)
             last_time_spawned_mcguffin = pygame.time.get_ticks()
 
         if pygame.time.get_ticks() - last_time_spawned_projectile >= Projectile_cooldown:
@@ -438,7 +439,7 @@ def main():
             #boost == 1
 
         for platform in platform_sprites_group:
-            platform.change_y = 2
+            platform.change_y = 3
             platform.rect.y += platformright.change_y
 
         for projectile in projectile_sprites_group:
@@ -448,6 +449,10 @@ def main():
         for hot_bomb in hot_bomb_sprites_group:
             hot_bomb.change_y = 5
             hot_bomb.rect.y += hot_bomb.change_y
+
+        for mcguffin in powerup_sprites_group:
+            mcguffin.change_y = 6
+            mcguffin.rect.y += mcguffin.change_y
 
 
 
@@ -533,7 +538,7 @@ def main():
 
         if player.hp <= 0:
             print("YOU GOT FLAVOURED")
-            done = True
+            Guy_dodge_game_done = True
 
         for hot_sauces in hot_bomb_sprites_group:
             if hot_bomb.rect.bottom > HEIGHT:
@@ -568,7 +573,7 @@ def main():
     mixer.music.load("./Songs/BGM/Game_over_music.mp3")
     mixer.music.play()
     
-    while done:
+    while Guy_dodge_game_done:
 
         screen.fill(BLACK)
         screen.blit(gobg, (0, 0))
@@ -576,11 +581,13 @@ def main():
         pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
+                Guy_dodge_game_done = True
         if pressed[pygame.K_RETURN]:
-            done = False
+            Guy_dodge_game_done = False
         if pressed[pygame.K_BACKSPACE]:
-            pygame.quit()
+            Main_menu = True
+
+    while Main_menu:
 
 
 
