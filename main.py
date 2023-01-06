@@ -588,6 +588,10 @@ def main():
             Main_menu = True
 
     while Main_menu:
+        mmt = pygame.image.load(Mainmenutest.jpg)
+        screen.fill(BLACK)
+        screen.blit()
+        pygame.display.flip()
 
 
 
