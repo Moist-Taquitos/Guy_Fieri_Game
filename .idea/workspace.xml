@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff43372b-7c34-46b3-84b3-4431aa082b8c" name="Changes" comment="All the assets and code for the Platform Dodge game">
-      <change afterPath="$PROJECT_DIR$/Assets/Button_test.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Songs/BGM/Start_screen_muzak.mp3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Button_select_arrow.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Quitbutton.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Retry_button.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,8 +44,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/Assets" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/Songs/BGM" />
       <recent name="$PROJECT_DIR$/Hellfire_Animation" />
     </key>
@@ -101,7 +103,14 @@
       <option name="project" value="LOCAL" />
       <updated>1673046058515</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="All the assets and code for the Platform Dodge game">
+      <created>1674678572801</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1674678572801</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -124,13 +133,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>254</line>
+          <line>272</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
           <line>199</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>632</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

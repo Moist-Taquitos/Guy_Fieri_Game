@@ -6,7 +6,7 @@ import turtle
 import os
 from colours import *
 
-# TODO: MOST IMPORTANT: Real start screen, screen FX, fix bugs
+# TODO: MOST IMPORTANT: QOL changes, fix bugs, button select arrow in game over screen
 # ----- CONSTANTS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -250,8 +250,26 @@ class Button (pygame.sprite.Sprite):
         self.image = pygame.Surface([100, 100])
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
-        self.image = pygame.image.load("Assets/Button_test.jpg")
+        self.image = pygame.image.load("Assets/Retry_button.jpg")
+        self.rect.x, self.rect.y = (WIDTH - 1000, HEIGHT - 450)
 
+class Quit_Button (pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface([100, 100])
+        self.image.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.image = pygame.image.load("Assets/Quitbutton.jpg")
+        self.rect.x, self.rect.y = (WIDTH - 500, HEIGHT - 450)
+
+class GameOver_Select_Arrow (pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface([100, 100])
+        self.image.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.image = pygame.image.load("Assets/Button_select_arrow.png")
+        self.rect.y = HEIGHT - 350
 def main():
     pygame.init()
 
@@ -274,6 +292,8 @@ def main():
     hot_bomb_sprites_group = pygame.sprite.Group()
     hot_explosion_sprites_group = pygame.sprite.Group()
     button_sprites_group = pygame.sprite.Group()
+    quit_button_sprites_group = pygame.sprite.Group()
+    GMOVER_arrow_sprites_group = pygame.sprite.Group()
 
     player = Player()
     floor = Floor()
@@ -304,6 +324,9 @@ def main():
 
     # Buttons for game over screen
     button_sprites_group.add(Button())
+    quit_button_sprites_group.add(Quit_Button())
+    GMOVER_arrow_sprites_group.add(GameOver_Select_Arrow())
+
 
 
 
@@ -588,16 +611,15 @@ def main():
 
         mixer.music.load("./Songs/BGM/Game_over_music.mp3")
         mixer.music.play()
-
+        post_game_option_select = 1
         while Guy_dodge_game_done and not Guy_dodge_game_running: #a long way of writing: while the game over screen runs, check for these commands
+            game_over_arrow = GameOver_Select_Arrow()
             screen.fill(BLACK)
             screen.blit(gobg, (0, 0))
-            post_game_option_select = 1
             # Make one button
-
             button_sprites_group.draw(screen)
-
-            pygame.display.flip()
+            quit_button_sprites_group.draw(screen)
+            GMOVER_arrow_sprites_group.draw(screen)
             # mixer.music.load("./Songs/BGM/Game_over_music.mp3")
             # mixer.music.play()
             pressed = pygame.key.get_pressed()
@@ -605,20 +627,20 @@ def main():
                 if event.type == pygame.QUIT:
                     Guy_dodge_game_done = True
                 if pressed[pygame.K_LEFT]:
-                    post_game_option_select += 1
-                if pressed[pygame.K_RIGHT]:
-                    post_game_option_select -= 1
-                if post_game_option_select > 2 or post_game_option_select < 1:
                     post_game_option_select = 1
-
-                if pressed[pygame.K_RETURN]:
+                    game_over_arrow.rect.x = WIDTH - 1000
+                if pressed[pygame.K_RIGHT]:
+                    post_game_option_select = 2
+                    game_over_arrow.rect.x = WIDTH - 500
+                if pressed[pygame.K_RETURN] and post_game_option_select == 1:
                     Guy_dodge_game_done = False
                     #Rerun the game unrecursively (closes main and reopens main)
                     return True
-                if pressed[pygame.K_BACKSPACE]:
+                if pressed[pygame.K_RETURN] and post_game_option_select == 2:
                     # closes the window
                     return False
                 print (post_game_option_select)
+                pygame.display.flip()
                 #Fills the screen with black, blits the gameover screen, checks for either enter or backspace
 
 
