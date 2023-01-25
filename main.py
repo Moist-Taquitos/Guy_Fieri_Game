@@ -5,10 +5,8 @@ from pygame import mixer
 import turtle
 import os
 from colours import *
-from tkinter import *
-from tkinter import messagebox
-# TODO: MOST IMPORTANT: HOME SCREEN
 
+# TODO: MOST IMPORTANT: Real start screen, screen FX, fix bugs
 # ----- CONSTANTS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -246,6 +244,13 @@ def draw_boost_bar(player, x, y, ):
                                                    boost_bar_width - 10)
     pygame.draw.rect(screen, CYAN, boost_bar_the_actual_boost_bar)
 
+class Button (pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface([100, 100])
+        self.image.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.image = pygame.image.load("Assets/Button_test.jpg")
 
 def main():
     pygame.init()
@@ -258,7 +263,9 @@ def main():
     gobg = pygame.image.load("Assets//Game_Over_Screen.jpg")
 
 
-    # Sprite groups
+    # TODO: Hookup all references to the below, to the game instead
+    #  Sprite groups
+
     all_sprites_group = pygame.sprite.Group()
     platform_sprites_group = pygame.sprite.Group()
     floor_sprites_group = pygame.sprite.Group()
@@ -266,19 +273,22 @@ def main():
     projectile_sprites_group = pygame.sprite.Group()
     hot_bomb_sprites_group = pygame.sprite.Group()
     hot_explosion_sprites_group = pygame.sprite.Group()
+    button_sprites_group = pygame.sprite.Group()
 
     player = Player()
     floor = Floor()
     mcguffin = Mcguffin()
     projectile = Projectile()
     hot_bomb = Hot_Sauce_Bomb()
+    #game_over_buttons = Buttons()
     hot_explosion = Hot_Explosion()
     all_sprites_group.add(player)
-    all_sprites_group.add(mcguffin)
+    #all_sprites_group.add(mcguffin)
     all_sprites_group.add(floor)
-    all_sprites_group.add(projectile)
-    all_sprites_group.add(hot_bomb)
-    all_sprites_group.add(hot_explosion)
+    #all_sprites_group.add(projectile)
+    #all_sprites_group.add(hot_bomb)
+    #all_sprites_group.add(hot_explosion)
+    #all_sprites_group.add(game_over_buttons)
     floor_sprites_group.add(floor)
     platformright = Platform()
     platformleft = Platform()
@@ -287,19 +297,26 @@ def main():
     all_sprites_group.add(platformleft)
     platform_sprites_group.add(platformright)
     platform_sprites_group.add(platformleft)
-    projectile_sprites_group.add(projectile)
-    hot_bomb_sprites_group.add(hot_bomb)
-    hot_explosion_sprites_group.add(hot_explosion)
+    #projectile_sprites_group.add(projectile)
+    #hot_bomb_sprites_group.add(hot_bomb)
+    #hot_explosion_sprites_group.add(hot_explosion)
+    #button_sprites_group.add(game_over_buttons)
+
+    # Buttons for game over screen
+    button_sprites_group.add(Button())
+
 
 
     # ----- LOCAL VARIABLES
     Main_menu = False
     Guy_dodge_game_done = False
+    Guy_dodge_game_running = True
     direction = 0
     crouch = False
     jump = 0
     score = 0
     mcguffin_timer = 0
+    invuln = 10
     time_since_last_jump = 0
     clock = pygame.time.Clock()
 
@@ -324,10 +341,10 @@ def main():
 
         # Spawn Platforms
         score += 1
+        #game.Platform_creator()
         if pygame.time.get_ticks() - last_time_spawned >= PLATFORM_COOLDOWN:
             platformright = Platform()
             platformleft = Platform()
-            platformcen = Platform()
             platformleft.rect.x, platformleft.rect.y = (WIDTH - random.randrange(300, 400), HEIGHT - random.randrange(1000, 1300))
             platformright.rect.x, platformright.rect.y = (WIDTH - random.randrange(1000, 1200), HEIGHT - random.randrange(1000, 1300))
             all_sprites_group.add(platformright)
@@ -369,8 +386,6 @@ def main():
 
 
 
-
-
         pressed = pygame.key.get_pressed()
         # ----- LOGIC
         #Touching the bottom of the screen code
@@ -381,8 +396,10 @@ def main():
         #Touching a platform, or in this case the "Floor"
         touching_floor = pygame.sprite.spritecollide(player, floor_sprites_group, False)
         for the_floor in touching_floor:
-            player.hp -= 1
-            print ("DAMAGE! FLOOR!")
+            if not invuln > 0:
+                player.hp -= 1
+                print ("DAMAGE! FLOOR!")
+                invuln += 200
             if floor.rect.top > player.rect.y:
                 player.change_y = 0
             if player.rect.bottom >= floor.rect.top:
@@ -427,13 +444,16 @@ def main():
 
         hot_explosion_contact = pygame.sprite.spritecollide(player, hot_explosion_sprites_group, False)
 
-        for projectiles in projectile_contact:
-            print("DAMAGE! PROJECTILE!")
-            player.hp -= 1
+        if not invuln > 0:
+            for projectiles in projectile_contact:
+                print("DAMAGE! PROJECTILE!")
+                player.hp -= 1
+                invuln += 200
 
-        for explosions in hot_explosion_contact:
-            print ("DAMAGE! EXPLOSION!")
-            player.hp -= 1
+            for explosions in hot_explosion_contact:
+                print ("DAMAGE! EXPLOSION!")
+                player.hp -= 1
+                invuln += 200
 
         #if boost > 1:
             #boost == 1
@@ -531,6 +551,10 @@ def main():
                 player.change_y -= 20
                 player.boost -= 1
                 print("boost up")
+        if pressed[pygame.K_ESCAPE]:
+            hp = 0
+            Guy_dodge_game_done = True
+            Guy_dodge_game_running = False
 
 
         all_sprites_group.update()
@@ -539,6 +563,7 @@ def main():
         if player.hp <= 0:
             print("YOU GOT FLAVOURED")
             Guy_dodge_game_done = True
+            Guy_dodge_game_running = False
 
         for hot_sauces in hot_bomb_sprites_group:
             if hot_bomb.rect.bottom > HEIGHT:
@@ -561,6 +586,42 @@ def main():
         else:
             screen.blit(floor_fire_rev, (0, HEIGHT - floor_fire_rev.get_height()))
 
+        mixer.music.load("./Songs/BGM/Game_over_music.mp3")
+        mixer.music.play()
+
+        while Guy_dodge_game_done and not Guy_dodge_game_running: #a long way of writing: while the game over screen runs, check for these commands
+            screen.fill(BLACK)
+            screen.blit(gobg, (0, 0))
+            post_game_option_select = 1
+            # Make one button
+
+            button_sprites_group.draw(screen)
+
+            pygame.display.flip()
+            # mixer.music.load("./Songs/BGM/Game_over_music.mp3")
+            # mixer.music.play()
+            pressed = pygame.key.get_pressed()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    Guy_dodge_game_done = True
+                if pressed[pygame.K_LEFT]:
+                    post_game_option_select += 1
+                if pressed[pygame.K_RIGHT]:
+                    post_game_option_select -= 1
+                if post_game_option_select > 2 or post_game_option_select < 1:
+                    post_game_option_select = 1
+
+                if pressed[pygame.K_RETURN]:
+                    Guy_dodge_game_done = False
+                    #Rerun the game unrecursively (closes main and reopens main)
+                    return True
+                if pressed[pygame.K_BACKSPACE]:
+                    # closes the window
+                    return False
+                print (post_game_option_select)
+                #Fills the screen with black, blits the gameover screen, checks for either enter or backspace
+
+
         #all_sprites_group.draw(platform)
 
 
@@ -569,35 +630,41 @@ def main():
         pygame.display.flip()
         clock.tick(60)
         time_since_last_jump += 1
+        invuln -= 1
 
-    mixer.music.load("./Songs/BGM/Game_over_music.mp3")
+
+
+def main_menu():
+    mixer.music.stop()
+    mixer.music.load("./Songs/BGM/Start_screen_muzak.mp3")
     mixer.music.play()
-    
-    while Guy_dodge_game_done:
+    screen.fill(BLACK)
+    mmt = pygame.image.load("./assets/Mainmenutest.jpg")
+    screen.blit(mmt, (0,0))
+    pygame.display.flip()
 
-        screen.fill(BLACK)
-        screen.blit(gobg, (0, 0))
-        pygame.display.flip()
+    while True: #while the main menu runs, these commands are active
         pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                Guy_dodge_game_done = True
-        if pressed[pygame.K_RETURN]:
-            Guy_dodge_game_done = False
-        if pressed[pygame.K_BACKSPACE]:
-            Main_menu = True
-
-    while Main_menu:
-        mmt = pygame.image.load(Mainmenutest.jpg)
-        screen.fill(BLACK)
-        screen.blit()
-        pygame.display.flip()
+                return False
+            if pressed[pygame.K_RETURN]:
+                return True
+            if pressed[pygame.K_BACKSPACE]:
+                return False
 
 
 
+while True: #Runs for the whole program. Universal truth. While the game runs, when you aren't in the main menu it runs the rerun loop, which will proceed to loop until you break out of it, but since it is the end of your while loop and the outermost loop is always true, it loops into the menu
+    if not main_menu():
+        break
+    # print ("main menu was here")
+    while True: #repeat infinitely until.... blank (check the break statement)
+        rerun = main()
+        if rerun:
+            continue
+        else:
+            break
 
-    pygame.quit()
 
-
-if __name__ == "__main__":
-    main()
+# the cutout of the cow. DO NOT REMOVE. IT BREAKS THE SHIT OUT OF THE GAME AND IDFK WHY.
