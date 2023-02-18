@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff43372b-7c34-46b3-84b3-4431aa082b8c" name="Changes" comment="All the assets and code for the Platform Dodge game">
-      <change afterPath="$PROJECT_DIR$/Assets/Button_select_arrow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Quitbutton.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Retry_button.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PlatformDodgeGame.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PlatformDodgeGame.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -133,7 +132,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>272</line>
+          <line>276</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -143,7 +142,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>632</line>
+          <line>635</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>

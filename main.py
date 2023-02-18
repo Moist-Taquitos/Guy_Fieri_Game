@@ -6,14 +6,14 @@ import turtle
 import os
 from colours import *
 
-# TODO: MOST IMPORTANT: QOL changes, fix bugs, button select arrow in game over screen
+# TODO: MOST IMPORTANT: QOL changes, fix bugs, Figure out why button needs 2 pushes to swap positions
 # ----- CONSTANTS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 SKY_BLUE = (95, 165, 228)
 WIDTH = 1200
-HEIGHT = 1000
+HEIGHT = 800
 TITLE = "Platform Dodge Game"
 
 # SCREEN STUFF LMAO
@@ -251,7 +251,7 @@ class Button (pygame.sprite.Sprite):
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
         self.image = pygame.image.load("Assets/Retry_button.jpg")
-        self.rect.x, self.rect.y = (WIDTH - 1000, HEIGHT - 450)
+        self.rect.x, self.rect.y = (WIDTH - 1000, HEIGHT - 250)
 
 class Quit_Button (pygame.sprite.Sprite):
     def __init__(self):
@@ -260,7 +260,7 @@ class Quit_Button (pygame.sprite.Sprite):
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
         self.image = pygame.image.load("Assets/Quitbutton.jpg")
-        self.rect.x, self.rect.y = (WIDTH - 500, HEIGHT - 450)
+        self.rect.x, self.rect.y = (WIDTH - 500, HEIGHT - 250)
 
 class GameOver_Select_Arrow (pygame.sprite.Sprite):
     def __init__(self):
@@ -269,7 +269,11 @@ class GameOver_Select_Arrow (pygame.sprite.Sprite):
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect()
         self.image = pygame.image.load("Assets/Button_select_arrow.png")
-        self.rect.y = HEIGHT - 350
+        self.change_x = 0
+        #self.rect.y = HEIGHT - 350
+        #self.rect.x = WIDTH - 1000
+    def update(self):
+        pass
 def main():
     pygame.init()
 
@@ -512,7 +516,7 @@ def main():
         # if platforms.rect.left < player.rect.x:
         #     print ("x")
         #     player.change_x = 0
-        if pressed[pygame.K_w]:
+        if pressed[pygame.K_w] or pressed[pygame.K_UP]:
             direction = 1
             player.rect.width, player.rect.height = (80, 110)
             if time_since_last_jump >= 0.5*60:
@@ -522,7 +526,7 @@ def main():
                     jump += 1
                     time_since_last_jump = 0
                     # print('jump')
-        if pressed[pygame.K_s]:
+        if pressed[pygame.K_s] or pressed[pygame.K_DOWN]:
             direction = 2
             crouch = True
             player.image = pygame.image.load("Assets//Player_crouch.png")
@@ -539,22 +543,22 @@ def main():
                 player.change_y = 0
                 player.rect.y += player.change_y
             else: crouch = False
-        if pressed[pygame.K_a]:
+        if pressed[pygame.K_a] or pressed[pygame.K_LEFT]:
             player.image = pygame.image.load("Assets//Player_left.png")
             player.rect.width, player.rect.height = (80, 110)
             player.change_x = 5
             player.rect.x -= player.change_x
             direction = 3
-        if pressed[pygame.K_d]:
+        if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
             player.image = pygame.image.load("Assets//Player_idle.png")
             player.rect.width, player.rect.height = (80, 110)
             player.change_x = 5
             player.rect.x += player.change_x
             direction = 4
-        if pressed[pygame.K_LSHIFT] and pressed[pygame.K_d]:
+        if pressed[pygame.K_LSHIFT] and pressed[pygame.K_d] or pressed[pygame.K_LSHIFT] and pressed[pygame.K_RIGHT]:
             player.change_x = 10
             player.rect.x += player.change_x
-        if pressed[pygame.K_LSHIFT] and pressed[pygame.K_a]:
+        if pressed[pygame.K_LSHIFT] and pressed[pygame.K_a] or pressed[pygame.K_LSHIFT] and pressed[pygame.K_LEFT]:
             player.change_x = 10
             player.rect.x -= player.change_x
         if pressed[pygame.K_SPACE] and player.boost >= 1:
@@ -611,15 +615,15 @@ def main():
 
         mixer.music.load("./Songs/BGM/Game_over_music.mp3")
         mixer.music.play()
-        post_game_option_select = 1
+        post_game_option_select = 0
         while Guy_dodge_game_done and not Guy_dodge_game_running: #a long way of writing: while the game over screen runs, check for these commands
-            game_over_arrow = GameOver_Select_Arrow()
             screen.fill(BLACK)
             screen.blit(gobg, (0, 0))
             # Make one button
             button_sprites_group.draw(screen)
             quit_button_sprites_group.draw(screen)
             GMOVER_arrow_sprites_group.draw(screen)
+            game_over_arrow = GameOver_Select_Arrow()
             # mixer.music.load("./Songs/BGM/Game_over_music.mp3")
             # mixer.music.play()
             pressed = pygame.key.get_pressed()
@@ -628,19 +632,24 @@ def main():
                     Guy_dodge_game_done = True
                 if pressed[pygame.K_LEFT]:
                     post_game_option_select = 1
-                    game_over_arrow.rect.x = WIDTH - 1000
                 if pressed[pygame.K_RIGHT]:
                     post_game_option_select = 2
-                    game_over_arrow.rect.x = WIDTH - 500
                 if pressed[pygame.K_RETURN] and post_game_option_select == 1:
                     Guy_dodge_game_done = False
                     #Rerun the game unrecursively (closes main and reopens main)
                     return True
                 if pressed[pygame.K_RETURN] and post_game_option_select == 2:
-                    # closes the window
+                    # Returns False, which ends the game over loop, starting the main menu loop
                     return False
-                print (post_game_option_select)
+                #I am not quite sure why THIS works of all things, but it does.
+                for game_over_arrow in GMOVER_arrow_sprites_group:
+                    if post_game_option_select == 1:
+                        game_over_arrow.rect.x = WIDTH - 1200
+                    if post_game_option_select == 2:
+                        game_over_arrow.rect.x = WIDTH - 600
                 pygame.display.flip()
+                print (post_game_option_select)
+
                 #Fills the screen with black, blits the gameover screen, checks for either enter or backspace
 
 
@@ -661,21 +670,42 @@ def main_menu():
     mixer.music.load("./Songs/BGM/Start_screen_muzak.mp3")
     mixer.music.play()
     screen.fill(BLACK)
-    mmt = pygame.image.load("./assets/Mainmenutest.jpg")
-    screen.blit(mmt, (0,0))
+    mm0 = pygame.image.load("./menu/all_off.png")
+    mm1 = pygame.image.load("./menu/all_play_on.png")
+    mm2 = pygame.image.load("./menu/all_options_on.png")
+    mm3 = pygame.image.load("./menu/all_quit_on.png")
+    screen.blit(mm0, (0,0))
+    mainmenu_select = 0
     pygame.display.flip()
+
 
     while True: #while the main menu runs, these commands are active
         pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-            if pressed[pygame.K_RETURN]:
+            if mainmenu_select > 3 or mainmenu_select <= -1:
+                mainmenu_select = 0
+            if pressed[pygame.K_DOWN]:
+                mainmenu_select += 1
+            if pressed[pygame.K_UP]:
+                mainmenu_select -= 1
+            if mainmenu_select == 0:
+                screen.blit(mm0, (0, 0))
+            elif mainmenu_select == 1:
+                screen.blit(mm1, (0, 0))
+            elif mainmenu_select == 2:
+                screen.blit(mm2, (0, 0))
+            elif mainmenu_select == 3:
+                screen.blit(mm3, (0, 0))
+            if pressed[pygame.K_RETURN] and mainmenu_select == 1:
                 return True
-            if pressed[pygame.K_BACKSPACE]:
+            if pressed[pygame.K_RETURN] and mainmenu_select == 3:
+                return False
+            if pressed[pygame.K_ESCAPE]:
                 return False
 
-
+            pygame.display.flip()
 
 while True: #Runs for the whole program. Universal truth. While the game runs, when you aren't in the main menu it runs the rerun loop, which will proceed to loop until you break out of it, but since it is the end of your while loop and the outermost loop is always true, it loops into the menu
     if not main_menu():
